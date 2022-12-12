@@ -1,41 +1,44 @@
 <template>
-<div>
-  <base-dialog :show="!!error" title="An error occurred">
-    <template #default>
-      <p>{{ error }}</p>
-    </template>
-    <template #action>
-      <base-button @click="confirmError">Okey</base-button>
-    </template>
-  </base-dialog>
-  <section>
-    <coach-filter @change-filter="setFilter"></coach-filter>
-  </section>
-  <section>
-    <base-card>
-      <div class="controls">
-        <base-button mode="outline" @click="loadCoaches(true)"
-          >Refresh</base-button
-        >
-        <base-button v-if="!isCoach" link to="/register"
-          >Register as a Coach</base-button
-        >
-      </div>
-      <ul v-if="hasCoaches">
-        <coach-item
-          v-for="coach in filteredCoaches"
-          :key="coach.id"
-          :id="coach.id"
-          :first-name="coach.firstName"
-          :last-name="coach.lastName"
-          :rate="coach.hourlyRate"
-          :areas="coach.areas"
-        ></coach-item>
-      </ul>
-      <h3 v-else>No Coaches found yet...</h3>
-    </base-card>
-  </section>
-</div>
+  <div>
+    <base-dialog :show="!!error" title="An error occurred">
+      <template #default>
+        <p>{{ error }}</p>
+      </template>
+      <template #action>
+        <base-button @click="confirmError">Okey</base-button>
+      </template>
+    </base-dialog>
+    <section>
+      <coach-filter @change-filter="setFilter"></coach-filter>
+    </section>
+    <section>
+      <base-card>
+        <div class="controls">
+          <base-button mode="outline" @click="loadCoaches(true)"
+            >Refresh</base-button
+          >
+          <base-button link to="/auth" v-if="!isLogin"
+            >Log in to Register as a Coach</base-button
+          >
+          <base-button v-if="isLogin && !isCoach" link to="/register"
+            >Register as a Coach</base-button
+          >
+        </div>
+        <ul v-if="hasCoaches">
+          <coach-item
+            v-for="coach in filteredCoaches"
+            :key="coach.id"
+            :id="coach.id"
+            :first-name="coach.firstName"
+            :last-name="coach.lastName"
+            :rate="coach.hourlyRate"
+            :areas="coach.areas"
+          ></coach-item>
+        </ul>
+        <h3 v-else>No Coaches found yet...</h3>
+      </base-card>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -57,6 +60,9 @@ export default {
     };
   },
   computed: {
+    isLogin() {
+      return this.$store.getters.isAuthenticated;
+    },
     isCoach() {
       return this.$store.getters['coaches/isCoach'];
     },

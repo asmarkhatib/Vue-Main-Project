@@ -34,8 +34,11 @@ export default {
       hourlyRate: data.rate,
       areas: data.areas,
     };
+
+    const token = context.rootGetters.token;
     const response = await fetch(
-      `https://vue-http-demo-1d63b-default-rtdb.firebaseio.com/coaches/${userId}.json`,
+      `https://vue-http-demo-1d63b-default-rtdb.firebaseio.com/coaches/${userId}.json?auth=` +
+        token,
       {
         method: 'PUT',
         body: JSON.stringify(coachData),

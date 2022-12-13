@@ -1,24 +1,27 @@
 <template>
-  <base-card>
-    <form @submit.prevent="submitForm">
-      <div class="form-control">
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" v-model.trim="email" />
-      </div>
-      <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model.trim="password" />
-      </div>
-      <p v-if="!formIsValid">
-        Please enter a valid email and password (must be at least 6 characters
-        lons.)
-      </p>
-      <base-button>{{ submitButtonCaption }}</base-button>
-      <base-button type="button" mode="flat" @click="switchAuthMode"
-        >{{ switchButtonModeCaption }}
-      </base-button>
-    </form>
-  </base-card>
+  <div>
+    <base-card>
+      <form @submit.prevent="submitForm">
+        <div class="form-control">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" v-model.trim="email" />
+        </div>
+        <div class="form-control">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model.trim="password" />
+        </div>
+        <base-spinner v-if="isLoading"></base-spinner>
+        <p v-if="!formIsValid">
+          Please enter a valid email and password (must be at least 6 characters
+          lons.)
+        </p>
+        <base-button>{{ submitButtonCaption }}</base-button>
+        <base-button type="button" mode="flat" @click="switchAuthMode"
+          >{{ switchButtonModeCaption }}
+        </base-button>
+      </form>
+    </base-card>
+  </div>
 </template>
 
 <script>
@@ -29,6 +32,7 @@ export default {
       password: '',
       formIsValid: true,
       mode: 'login',
+      isLoading: false,
     };
   },
 
@@ -50,7 +54,7 @@ export default {
   },
 
   methods: {
-    submitForm() {
+    async submitForm() {
       this.formIsValid = true;
       if (
         this.email === '' ||
@@ -59,6 +63,7 @@ export default {
       ) {
         this.formIsValid = false;
       }
+      this.isLoading = true;
 
       const userInputs = {
         email: this.email,
@@ -66,12 +71,14 @@ export default {
       };
 
       if (this.mode === 'login') {
-        this.$store.dispatch('logIn', userInputs);
+        await this.$store.dispatch('logIn', userInputs);
         this.$router.replace('/coaches');
       } else {
-        this.$store.dispatch('signUp', userInputs);
+        await this.$store.dispatch('signUp', userInputs);
         this.$router.replace('/coaches');
       }
+
+      this.isLoading = false;
     },
 
     switchAuthMode() {

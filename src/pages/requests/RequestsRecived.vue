@@ -13,6 +13,7 @@
         <header>
           <h2>Requests Received</h2>
         </header>
+        <base-spinner v-if="isLoading"></base-spinner>
         <ul v-if="hasRequests">
           <requests-item
             v-for="req in receviedRequests"
@@ -36,6 +37,7 @@ export default {
   data() {
     return {
       error: null,
+      isLoading: false,
     };
   },
   computed: {
@@ -51,11 +53,13 @@ export default {
   },
   methods: {
     async loadRequests() {
+      this.isLoading = true;
       try {
         await this.$store.dispatch('requests/loadRequests');
       } catch (error) {
         this.error = error.message || 'Something is wrong at this moment!';
       }
+      this.isLoading = false;
     },
     confirmError() {
       this.error = null;

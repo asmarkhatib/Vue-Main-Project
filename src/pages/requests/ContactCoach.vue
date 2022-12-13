@@ -8,6 +8,7 @@
       <label for="message">Message</label>
       <textarea id="message" rows="5" v-model.trim="message"></textarea>
     </div>
+    <base-spinner v-if="isLoading"></base-spinner>
     <p class="errors" v-if="!formIsValid">
       Please enter a valid email and message should not be empty.
     </p>
@@ -24,10 +25,11 @@ export default {
       email: '',
       message: '',
       formIsValid: true,
+      isLoading: false,
     };
   },
   methods: {
-    submitForm() {
+    async submitForm() {
       this.formIsValid = true;
       if (
         this.email === '' ||
@@ -37,11 +39,13 @@ export default {
         this.formIsValid = false;
         return;
       }
-      this.$store.dispatch('requests/contactCoach', {
+      this.isLoading = true;
+      await this.$store.dispatch('requests/contactCoach', {
         email: this.email,
         message: this.message,
         coachId: this.$route.params.id,
       });
+      this.isLoading = false;
       this.$router.replace('/coaches');
     },
   },
